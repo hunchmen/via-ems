@@ -11,21 +11,23 @@ import com.via.ems.mapper.EmployeeMapper;
 import com.via.ems.model.Employee;
 import com.via.ems.repository.EmployeeRepository;
 
-import lombok.AllArgsConstructor;
-
 @Service
-@AllArgsConstructor
 public class EmployeeServiceImpl implements EmployeeService {
 
     private EmployeeRepository employeeRepository;
 
+    private EmployeeMapper employeeMapper;
+
+    public EmployeeServiceImpl(EmployeeRepository employeeRepository, EmployeeMapper employeeMapper) {
+        this.employeeRepository = employeeRepository;
+        this.employeeMapper = employeeMapper;
+    }
+
     @Override
-    public EmployeeDTO createEmployee(EmployeeDTO employeeDTO) {
-
-        Employee employee = EmployeeMapper.mapToEmployee(employeeDTO);
-        Employee savedEmployee = employeeRepository.save(employee);
-
-        return EmployeeMapper.mapToEmployeeDTO(savedEmployee);
+    public EmployeeDTO createEmployee(EmployeeDTO request) {
+        Employee savedEmployee = employeeMapper.toEntity(request);
+        employeeRepository.save(savedEmployee);
+        return employeeMapper.toDto(savedEmployee);
     }
 
     @Override
@@ -34,13 +36,13 @@ public class EmployeeServiceImpl implements EmployeeService {
             .orElseThrow(() -> 
                     new ResourceNotFoundException("Employee is not exist with the given id=" + id));
 
-        return EmployeeMapper.mapToEmployeeDTO(employee);
+        return employeeMapper.toDto(employee);
     }
 
     @Override
     public List<EmployeeDTO> getAllEmployee() {
         List<Employee> employeeList = employeeRepository.findAll();
-        return employeeList.stream().map(EmployeeMapper::mapToEmployeeDTO).collect(Collectors.toList());
+        return employeeList.stream().map(employeeMapper::toDto).collect(Collectors.toList());
     }
 
     @Override
@@ -51,13 +53,13 @@ public class EmployeeServiceImpl implements EmployeeService {
             .orElseThrow(() -> new ResourceNotFoundException("Employee not found with id=" + id));
         
         //set all the property based on new employee information
-        employee.setFirstName(updatedEmployee.getFirstName());
-        employee.setLastName(updatedEmployee.getLastName());
-        employee.setEmail(updatedEmployee.getEmail());
+        employee.setFirstName(updatedEmployee.firstName());
+        employee.setLastName(updatedEmployee.lastName());
+        employee.setEmail(updatedEmployee.email());
 
         Employee newlyUpdatedEmployee = employeeRepository.save(employee);
 
-        return EmployeeMapper.mapToEmployeeDTO(newlyUpdatedEmployee);
+        return employeeMapper.toDto(newlyUpdatedEmployee);
     }
 
     @Override

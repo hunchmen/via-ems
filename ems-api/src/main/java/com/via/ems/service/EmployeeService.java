@@ -4,9 +4,10 @@ import java.util.List;
 
 import com.via.ems.dto.EmployeeDTO;
 
+
 public interface EmployeeService {
     
-    EmployeeDTO createEmployee(EmployeeDTO employeeDTO);
+    EmployeeDTO createEmployee(EmployeeDTO request);
 
     EmployeeDTO getEmployeeById(Long id);
 

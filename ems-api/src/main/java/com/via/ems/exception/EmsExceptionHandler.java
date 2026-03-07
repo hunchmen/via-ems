@@ -13,9 +13,7 @@ public class EmsExceptionHandler {
     
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ErrorDTO> handleResourceNotFound(ResourceNotFoundException ex, WebRequest request) {
-        ErrorDTO error = new ErrorDTO();
-        error.setErrorCode(String.valueOf(HttpStatus.NOT_FOUND.value()));
-        error.setErrorMessage(ex.getMessage());
+        ErrorDTO error = new ErrorDTO(String.valueOf(HttpStatus.NOT_FOUND.value()), ex.getMessage());
         return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
 }
